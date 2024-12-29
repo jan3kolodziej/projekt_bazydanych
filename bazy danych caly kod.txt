@@ -1,0 +1,111 @@
+CREATE DATABASE SalonSamochodowy
+GO
+
+CREATE TABLE Klienci(
+id_klienta Int Identity(1,1) PRIMARY KEY,
+imie nVarChar(50) NOT NULL,
+nazwisko nVarChar(50) NOT NULL,
+adres nVarChar(100),
+email VarChar(100) UNIQUE,
+telefon VarChar(15)
+)
+GO
+
+CREATE TABLE Samochody(
+id_samochodu Int Identity(1,1) PRIMARY KEY,
+marka VarChar(50) NOT NULL,
+model VarChar(50) NOT NULL,
+rok_produkcji Int NOT NULL,
+cena Decimal(10, 2) NOT NULL,
+status_auta nVarChar(10) NOT NULL, 
+CONSTRAINT chk_status_auta CHECK (status_auta IN ('nowy', 'używany'))
+)
+GO
+
+CREATE TABLE Zamowienia (
+id_zamowienia Int Identity(1,1) PRIMARY KEY,
+id_klienta INT,
+id_samochodu INT,
+data_zamowienia DATE DEFAULT CAST(GetDate() AS DATE),
+FOREIGN KEY (id_klienta) REFERENCES Klienci(id_klienta),
+FOREIGN KEY (id_samochodu) REFERENCES Samochody(id_samochodu)
+)
+GO
+
+CREATE TABLE Dzialy (
+id_dzialu INT Identity(1,1) PRIMARY KEY,
+nazwa nVARCHAR(50) NOT NULL
+)
+GO
+
+CREATE TABLE Pracownicy (
+id_pracownika Int Identity(1,1) PRIMARY KEY,
+imie nVARCHAR(50) NOT NULL,
+nazwisko nVARCHAR(50) NOT NULL,
+id_dzialu INT,
+stanowisko nVARCHAR(50),
+data_zatrudnienia DATE NOT NULL,
+FOREIGN KEY (id_dzialu) REFERENCES Dzialy(id_dzialu)
+)
+GO
+
+CREATE TABLE Dostawcy (
+id_dostawcy INT Identity(1,1) PRIMARY KEY,
+nazwa nVARCHAR(100) NOT NULL,
+telefon VARCHAR(15),
+adres VARCHAR(100)
+)
+GO
+
+CREATE TABLE Serwis (
+id_uslugi INT Identity(1,1) PRIMARY KEY,
+id_samochodu INT,
+id_pracownika INT,
+data_uslugi DATE DEFAULT CAST(GetDate() AS DATE),
+opis_uslugi TEXT,
+FOREIGN KEY (id_samochodu) REFERENCES Samochody(id_samochodu),
+FOREIGN KEY (id_pracownika) REFERENCES Pracownicy(id_pracownika)
+)
+GO
+
+INSERT INTO Klienci (imie, nazwisko, adres, email, telefon) VALUES
+('Jan', 'Kowalski', 'Warszawa, ul. Polna 10', 'jan.kowalski@gmail.com', '123456789'),
+('Anna', 'Nowak', 'Kraków, ul. Szeroka 5', 'anna.nowak@gmail.com', '987654321'),
+('Piotr', 'Wiśniewski', 'Gdańsk, ul. Dluga 3', 'piotr.wisniewski@gmail.com', '456789123')
+GO
+
+INSERT INTO Samochody (marka, model, rok_produkcji, cena, status_auta) VALUES
+('Toyota', 'Corolla', 2021, 80000, 'nowy'),
+('Ford', 'Focus', 2018, 60000, 'używany'),
+('Volkswagen', 'Passat', 2020, 100000, 'nowy')
+GO
+
+INSERT INTO Dzialy (nazwa) VALUES
+('Sprzedaż'),
+('Serwis'),
+('Administracja')
+GO
+
+INSERT INTO Pracownicy (imie, nazwisko, id_dzialu, stanowisko, data_zatrudnienia) VALUES
+('Tomasz', 'Mazur', 1, 'Sprzedawca', '2020-01-15'),
+('Katarzyna', 'Lewandowska', 2, 'Mechanik', '2019-06-10'),
+('Michał', 'Zieliński', 3, 'Administrator', '2021-09-01')
+GO
+
+INSERT INTO Zamowienia (id_klienta, id_samochodu, data_zamowienia) VALUES
+(1, 1, '2024-01-10'),
+(2, 2, '2024-02-20'),
+(3, 3, '2024-03-15')
+GO
+
+INSERT INTO Dostawcy (nazwa, telefon, adres) VALUES
+('AutoParts', '555666777', 'Poznań, ul. Techniczna 15'),
+('CarSupply', '444555666', 'Wrocław, ul. Przemyslowa 20'),
+('Parts4Cars', '333444555', 'Lódź, ul. Zakladowa 8')
+GO
+
+INSERT INTO Serwis (id_samochodu, id_pracownika, data_uslugi, opis_uslugi) VALUES
+(1, 2, '2024-04-01', 'Wymiana oleju i filtrów'),
+(2, 2, '2024-05-15', 'Naprawa układu hamulcowego'),
+(3, 2, '2024-06-10', 'Przegląd techniczny')
+GO
